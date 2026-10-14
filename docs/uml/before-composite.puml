@@ -1,0 +1,96 @@
+@startuml before-composite
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam class {
+    BackgroundColor #FADBD8
+    ArrowColor #922B21
+    BorderColor #922B21
+}
+
+title Diseño ANTES del Patrón Composite (Alto Acoplamiento y sin Abstracción)
+
+class ImageEditor {
+    - elements: List<Object>
+    + addElement(element: Object): void
+    + removeElement(element: Object): void
+    + getElements(): List<Object>
+    + draw(item: Object): void
+    + move(item: Object, dx: int, dy: int): void
+    + drawAll(): void
+    + moveAll(dx: int, dy: int): void
+}
+
+class Dot {
+    - x: int
+    - y: int
+    + Dot(x: int, y: int)
+    + move(dx: int, dy: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+}
+
+class Circle {
+    - x: int
+    - y: int
+    - radius: int
+    + Circle(x: int, y: int, radius: int)
+    + move(dx: int, dy: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+    + getRadius(): int
+}
+
+class Rectangle {
+    - x: int
+    - y: int
+    - width: int
+    - height: int
+    + Rectangle(x: int, y: int, width: int, height: int)
+    + move(dx: int, dy: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+    + getWidth(): int
+    + getHeight(): int
+}
+
+class Group {
+    - name: String
+    - children: List<Object>
+    + Group(name: String)
+    + add(element: Object): void
+    + remove(element: Object): void
+    + getChildren(): List<Object>
+    + getName(): String
+}
+
+' Relaciones de acoplamiento directo y débil tipado
+ImageEditor ..> Dot : <<conoce / instanceof>>
+ImageEditor ..> Circle : <<conoce / instanceof>>
+ImageEditor ..> Rectangle : <<conoce / instanceof>>
+ImageEditor ..> Group : <<conoce / instanceof>>
+
+Group *--> "0..*" Object : almacena (falta de tipado estricto)
+
+note top of ImageEditor
+  <b>Problema central:</b>
+  El cliente depende directamente de cada clase concreta.
+  Utiliza <i>instanceof</i> y casting para poder invocar
+  draw() y move(), además de implementar la recursión
+  para los grupos de manera manual.
+  <b>Violación flagrante de OCP y DIP.</b>
+end note
+
+note bottom of Group
+  <b>Inseguridad de tipos:</b>
+  Al no existir una abstracción común,
+  Group se ve forzado a almacenar <i>List<Object></i>,
+  permitiendo la inserción de elementos no gráficos
+  que causan fallos en tiempo de ejecución.
+end note
+
+@enduml

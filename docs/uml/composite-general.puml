@@ -1,0 +1,64 @@
+@startuml composite-general
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam handwritten false
+skinparam class {
+    BackgroundColor LightYellow
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+title Estructura General del Patrón de Diseño Composite
+
+interface Component <<interface>> {
+    + execute(): void
+}
+
+class Leaf {
+    + execute(): void
+}
+
+class Composite {
+    - children: List<Component>
+    + add(c: Component): void
+    + remove(c: Component): void
+    + getChildren(): List<Component>
+    + execute(): void
+}
+
+class Client {
+    + operation(): void
+}
+
+' Relaciones
+Component <|.. Leaf : implementa
+Component <|.. Composite : implementa
+Composite *--> "0..*" Component : compone (recursión)
+Client --> Component : interactúa a través de
+
+note right of Composite::execute
+  for (Component child : children) {
+      child.execute();
+  }
+end note
+
+note bottom of Leaf
+  Representa los objetos finales
+  que realizan el trabajo real.
+  No poseen hijos.
+end note
+
+note bottom of Composite
+  Contenedor que delega el
+  trabajo a sus hijos y puede
+  contener otros compuestos.
+end note
+
+note top of Client
+  El cliente manipula todos los elementos
+  exclusivamente a través de la interfaz Component.
+end note
+
+@enduml

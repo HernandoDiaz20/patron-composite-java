@@ -1,0 +1,101 @@
+@startuml after-composite
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam class {
+    BackgroundColor #D4EFDF
+    ArrowColor #196F3D
+    BorderColor #196F3D
+}
+
+title Diseño DESPUÉS del Patrón Composite (Estructura Polimórfica y Desacoplada)
+
+interface Graphic <<Component>> {
+    + move(x: int, y: int): void
+    + draw(): void
+}
+
+class Dot <<Leaf>> {
+    - x: int
+    - y: int
+    + Dot(x: int, y: int)
+    + move(x: int, y: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+}
+
+class Circle <<Leaf>> {
+    - x: int
+    - y: int
+    - radius: int
+    + Circle(x: int, y: int, radius: int)
+    + move(x: int, y: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+    + getRadius(): int
+}
+
+class Rectangle <<Leaf>> {
+    - x: int
+    - y: int
+    - width: int
+    - height: int
+    + Rectangle(x: int, y: int, width: int, height: int)
+    + move(x: int, y: int): void
+    + draw(): void
+    + getX(): int
+    + getY(): int
+    + getWidth(): int
+    + getHeight(): int
+}
+
+class CompoundGraphic <<Composite>> {
+    - name: String
+    - children: List<Graphic>
+    + CompoundGraphic(name: String)
+    + add(child: Graphic): void
+    + remove(child: Graphic): void
+    + getChildren(): List<Graphic>
+    + move(x: int, y: int): void
+    + draw(): void
+    + getName(): String
+}
+
+class ImageEditor <<Client>> {
+    - elements: List<Graphic>
+    + add(graphic: Graphic): void
+    + remove(graphic: Graphic): void
+    + getElements(): List<Graphic>
+    + draw(graphic: Graphic): void
+    + move(graphic: Graphic, x: int, y: int): void
+    + drawAll(): void
+    + moveAll(x: int, y: int): void
+}
+
+' Relaciones del Patrón Composite
+Graphic <|.. Dot : implementa
+Graphic <|.. Circle : implementa
+Graphic <|.. Rectangle : implementa
+Graphic <|.. CompoundGraphic : implementa
+
+CompoundGraphic *--> "0..*" Graphic : contiene (composición recursiva)
+ImageEditor --> "0..*" Graphic : manipula de forma uniforme
+
+note bottom of CompoundGraphic
+  <b>Delegación recursiva:</b>
+  move() y draw() se delegan a cada elemento
+  hijo a través de la interfaz Graphic, sin
+  requerir 'instanceof' ni casting.
+end note
+
+note top of ImageEditor
+  <b>Cliente desacoplado:</b>
+  El cliente sólo depende de la interfaz Graphic.
+  Trata a hojas y a compuestos con total uniformidad.
+  Cumple plenamente con OCP y DIP.
+end note
+
+@enduml
